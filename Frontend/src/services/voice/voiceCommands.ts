@@ -23,6 +23,18 @@ type SpeechWindow = Window & {
   webkitSpeechRecognition?: SpeechRecognitionConstructor;
 };
 
+let activeContinuousControls: {
+  pause: () => void;
+  resume: () => void;
+} | null = null;
+let ttsSpeaking = false;
+
+export function setVoiceOutputActive(active: boolean): void {
+  ttsSpeaking = active;
+  if (active) activeContinuousControls?.pause();
+  else activeContinuousControls?.resume();
+}
+
 export function startContinuousVoiceCommand(
   language: string,
   onCommand: (transcript: string) => void,
@@ -31,19 +43,20 @@ export function startContinuousVoiceCommand(
   if (!Recognition) return () => undefined;
 
   let stopped = false;
+  let pausedForTts = false;
   let restartTimer: number | null = null;
   const recognition = new Recognition();
 
   const scheduleRestart = () => {
-    if (stopped || restartTimer !== null) return;
+    if (stopped || pausedForTts || ttsSpeaking || restartTimer !== null) return;
     restartTimer = window.setTimeout(() => {
       restartTimer = null;
-      startRecognition();
+      if (!pausedForTts && !ttsSpeaking) startRecognition();
     }, 500);
   };
 
   const startRecognition = () => {
-    if (stopped) return;
+    if (stopped || pausedForTts || ttsSpeaking) return;
     try {
       recognition.start();
     } catch {
@@ -58,7 +71,10 @@ export function startContinuousVoiceCommand(
       const transcript = Array.from({ length: event.results.length }, (_, index) =>
         event.results[index]?.[0]?.transcript?.trim() ?? "",
       ).filter(Boolean).join(" ");
-      if (transcript) onCommand(transcript);
+      if (transcript) {
+        pause();
+        onCommand(transcript);
+      }
   };
   recognition.onerror = (event) => {
     if (event?.error === "not-allowed" || event?.error === "service-not-allowed") {
@@ -74,8 +90,23 @@ export function startContinuousVoiceCommand(
   // Reuse one recognition session object for the authenticated app lifetime.
   startRecognition();
 
+  const pause = () => {
+    pausedForTts = true;
+    if (restartTimer !== null) {
+      window.clearTimeout(restartTimer);
+      restartTimer = null;
+    }
+    recognition.stop();
+  };
+  const resume = () => {
+    pausedForTts = false;
+    startRecognition();
+  };
+  activeContinuousControls = { pause, resume };
+
   return () => {
     stopped = true;
+    if (activeContinuousControls?.pause === pause) activeContinuousControls = null;
     if (restartTimer !== null) window.clearTimeout(restartTimer);
     recognition.stop();
   };

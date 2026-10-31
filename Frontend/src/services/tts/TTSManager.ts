@@ -7,6 +7,7 @@ import type {
 } from "@/services/tts/types";
 import { ElevenLabsTTSProvider } from "@/services/tts/ElevenLabsTTSProvider";
 import { cacheKey, getCachedAudio, setCachedAudio } from "@/services/tts/cache";
+import { setVoiceOutputActive } from "@/services/voice/voiceCommands";
 
 type StatusListener = (status: SpeechStatus) => void;
 type ProviderListener = (status: ProviderStatus) => void;
@@ -83,7 +84,8 @@ class TTSManager {
   }
 
   private async speakRequest(req: TTSRequest, key: string): Promise<void> {
-    this.stop();
+    this.stop(false);
+    setVoiceOutputActive(true);
     const generation = this.playbackGeneration;
     const provider = this.pickProvider();
 
@@ -97,6 +99,7 @@ class TTSManager {
         message: "ElevenLabs voice is not configured.",
       });
       this.setStatus("error");
+      setVoiceOutputActive(false);
       return;
     }
 
@@ -128,7 +131,9 @@ class TTSManager {
         this.audio.addEventListener("ended", finish, { once: true });
         this.audio.addEventListener("error", finish, { once: true });
       });
+      if (generation === this.playbackGeneration) setVoiceOutputActive(false);
     } catch (error) {
+      if (generation === this.playbackGeneration) setVoiceOutputActive(false);
       this.setProviderStatus((s) => ({
         ...s,
         available: false,
@@ -139,8 +144,9 @@ class TTSManager {
     }
   }
 
-  stop(): void {
+  stop(resumeRecognition = true): void {
     this.playbackGeneration += 1;
+    if (resumeRecognition) setVoiceOutputActive(false);
     if (this.audio) {
       this.audio.pause();
       this.audio.currentTime = 0;

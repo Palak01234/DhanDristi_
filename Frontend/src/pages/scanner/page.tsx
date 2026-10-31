@@ -22,7 +22,12 @@ import { WaveformBars } from "@/components/feature/WaveformBars";
 import { useApp } from "@/context/AppProvider";
 import { useVoice } from "@/context/VoiceProvider";
 import { getCurrency } from "@/constants/currencies";
-import { checkFrameQuality, runInference } from "@/services/inference/inferenceService";
+import {
+  captureCameraFrame,
+  checkFrameQuality,
+  runInference,
+  validateCurrencyFrame,
+} from "@/services/inference/inferenceService";
 import { buildResultSpeechForVoice } from "@/services/inference/resultSpeech";
 import { modeMessage, statusMessage, voiceMessage } from "@/services/voice/voiceMessages";
 import type { DetectionMode } from "@/types";
@@ -195,7 +200,20 @@ export default function Scanner() {
     setGuideText(quality.message);
     if (!automatic) speak(voiceMessage("scanning", settings.language), "normal", settings.language);
     try {
-      const { result } = await runInference(preferences, videoRef.current ?? undefined);
+      const capturedFrame = await captureCameraFrame(videoRef.current);
+      const validation = await validateCurrencyFrame(capturedFrame.blob);
+      if (!validation.valid) {
+        setGuideText("No clear currency note found. Place the full note inside the frame and try again.");
+        if (!automatic) {
+          speak(
+            "No clear currency note found. Place the full note inside the frame and try again.",
+            "attention",
+            settings.language,
+          );
+        }
+        return;
+      }
+      const { result } = await runInference(preferences, capturedFrame);
       const confidence = result.currencies[0]?.confidence ?? 0;
       const cleanDetection = result.status === "success" && confidence >= preferences.confidenceThreshold;
       const requiresCounterfeitCheck = Boolean(result.currencies[0] && confidence < COUNTERFEIT_CONFIDENCE_THRESHOLD);
