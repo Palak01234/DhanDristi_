@@ -7,6 +7,7 @@ import { InputField } from "@/components/base/InputField";
 import { useApp } from "@/context/AppProvider";
 import { getLanguages, getPersonasForLanguage } from "@/services/tts/voiceRegistry";
 import { saveStoredUser } from "@/services/auth/session";
+import { apiUrl } from "@/services/api";
 import type { CurrencyCode } from "@/constants/currencies";
 
 export default function Login() {
@@ -31,7 +32,7 @@ export default function Login() {
     }
     setLoading(true);
     try {
-      const response = await fetch("/api/auth/login", {
+      const response = await fetch(apiUrl("/api/auth/login"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

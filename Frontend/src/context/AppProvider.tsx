@@ -14,6 +14,7 @@ import type {
 import { DEFAULT_PREFERENCES } from "@/data/defaults";
 import type { DetectionRecord } from "@/types";
 import { clearStoredUser, readStoredUser } from "@/services/auth/session";
+import { apiUrl } from "@/services/api";
 
 export interface AppContextValue {
   preferences: UserPreferences;
@@ -68,24 +69,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const addHistoryRecord = useCallback(async (record: DetectionRecord) => {
     setHistory((prev) => [record, ...prev]);
     if (activeEmail) {
-      const response = await fetch("/api/history", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: activeEmail, record }) });
+      const response = await fetch(apiUrl("/api/history"), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: activeEmail, record }) });
       if (!response.ok) throw new Error("History could not be saved to MongoDB");
     }
   }, [activeEmail]);
   const removeHistoryRecord = useCallback((id: string) => {
     setHistory((prev) => prev.filter((record) => record.id !== id));
-    if (activeEmail) void fetch(`/api/history/${encodeURIComponent(id)}?email=${encodeURIComponent(activeEmail)}`, { method: "DELETE" });
+    if (activeEmail) void fetch(apiUrl(`/api/history/${encodeURIComponent(id)}?email=${encodeURIComponent(activeEmail)}`), { method: "DELETE" });
   }, [activeEmail]);
   const clearHistory = useCallback(() => {
     setHistory([]);
-    if (activeEmail) void fetch(`/api/history?email=${encodeURIComponent(activeEmail)}`, { method: "DELETE" });
+    if (activeEmail) void fetch(apiUrl(`/api/history?email=${encodeURIComponent(activeEmail)}`), { method: "DELETE" });
   }, [activeEmail]);
   const switchUser = useCallback((email: string) => {
     const normalizedEmail = email.trim().toLowerCase();
     setActiveEmail(normalizedEmail);
     setHistory([]);
     setLastResult(null);
-    void fetch(`/api/history?email=${encodeURIComponent(normalizedEmail)}`)
+    void fetch(apiUrl(`/api/history?email=${encodeURIComponent(normalizedEmail)}`))
       .then((response) => response.ok ? response.json() as Promise<DetectionRecord[]> : [])
       .then((records) => setHistory(records));
   }, []);
@@ -99,7 +100,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!activeEmail) return;
     let cancelled = false;
-    void fetch(`/api/history?email=${encodeURIComponent(activeEmail)}`)
+    void fetch(apiUrl(`/api/history?email=${encodeURIComponent(activeEmail)}`))
       .then((response) => response.ok ? response.json() as Promise<DetectionRecord[]> : [])
       .then((records) => {
         if (!cancelled) setHistory(records);

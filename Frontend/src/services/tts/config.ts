@@ -1,3 +1,5 @@
+import { apiUrl } from "@/services/api";
+
 /**
  * TTS provider configuration.
  *
@@ -28,7 +30,7 @@ function env(): {
 export function getTTSFunctionUrl(): string {
   const e = env();
   if (e.ttsEndpoint) return e.ttsEndpoint;
-  return "/api/tts";
+  return apiUrl("/api/tts");
 }
 
 /** Whether ElevenLabs AI TTS is enabled (backend + key configured + not opted out). */

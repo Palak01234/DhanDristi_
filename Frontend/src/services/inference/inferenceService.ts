@@ -1,12 +1,11 @@
 import type { DetectionResult, UserPreferences } from "@/types";
+import { apiUrl } from "@/services/api";
 
 export interface InferenceOutput {
   result: DetectionResult;
 }
 
 /** Sends a camera frame to the ONNX inference API and maps its response to the UI contract. */
-const MODEL_API_URL = import.meta.env.VITE_MODEL_API_URL || "";
-
 export async function runInference(
   preferences: UserPreferences,
   video?: HTMLVideoElement,
@@ -19,7 +18,7 @@ export async function runInference(
     const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.9));
     if (!blob) throw new Error("Could not capture a camera frame");
 
-    const response = await fetch(`${MODEL_API_URL}/api/inference`, {
+    const response = await fetch(apiUrl("/api/inference"), {
       method: "POST",
       headers: {
         "Content-Type": "image/jpeg",

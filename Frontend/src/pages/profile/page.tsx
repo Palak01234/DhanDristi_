@@ -14,6 +14,7 @@ import { Button } from "@/components/base/Button";
 import { useApp } from "@/context/AppProvider";
 import { getCurrency } from "@/constants/currencies";
 import { readStoredUser } from "@/services/auth/session";
+import { apiUrl } from "@/services/api";
 
 interface UserRowProps {
   icon: React.ReactNode;
@@ -50,7 +51,7 @@ export default function Profile() {
     let cancelled = false;
     const session = readStoredUser();
     if (!session) return;
-    void fetch(`/api/auth/profile?email=${encodeURIComponent(session.email)}`)
+    void fetch(apiUrl(`/api/auth/profile?email=${encodeURIComponent(session.email)}`))
       .then(async (response) => {
         if (!response.ok) return null;
         return (await response.json()) as ProfileData;

@@ -16,6 +16,7 @@ import { SUPPORTED_CURRENCIES, type CurrencyCode } from "@/constants/currencies"
 import { getLanguages, getPersonasForLanguage } from "@/services/tts/voiceRegistry";
 import { useApp } from "@/context/AppProvider";
 import { saveStoredUser } from "@/services/auth/session";
+import { apiUrl } from "@/services/api";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -57,7 +58,7 @@ export default function Signup() {
     try {
       const language = getLanguages().find((item) => item.code === defaultLanguage) ?? getLanguages()[0];
       const persona = getPersonasForLanguage(language.base).find((item) => item.gender === "female");
-      const response = await fetch("/api/auth/signup", {
+      const response = await fetch(apiUrl("/api/auth/signup"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
