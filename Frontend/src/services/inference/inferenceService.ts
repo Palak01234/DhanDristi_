@@ -5,6 +5,40 @@ export interface InferenceOutput {
   result: DetectionResult;
 }
 
+export interface FrameQuality {
+  ready: boolean;
+  message: string;
+}
+
+export async function checkFrameQuality(video: HTMLVideoElement): Promise<FrameQuality> {
+  if (video.videoWidth === 0 || video.videoHeight === 0) {
+    return { ready: false, message: "Camera is still starting. Please wait a moment." };
+  }
+
+  const first = captureFrame(video);
+  await new Promise((resolve) => window.setTimeout(resolve, 180));
+  const second = captureFrame(video);
+  if (!first || !second) {
+    return { ready: false, message: "Please place the currency note clearly inside the frame." };
+  }
+
+  const brightness = averageBrightness(second);
+  if (brightness < 28) {
+    return { ready: false, message: "The image is too dark. Improve the lighting and show the note clearly." };
+  }
+  if (brightness > 235) {
+    return { ready: false, message: "The image is too bright. Reduce glare and show the note clearly." };
+  }
+  if (frameDifference(first, second) > 24) {
+    return { ready: false, message: "Hold the phone steady with the full note inside the frame." };
+  }
+  if (sharpness(second) < 14) {
+    return { ready: false, message: "The note is not clear. Move closer and hold the phone steady." };
+  }
+
+  return { ready: true, message: "Clear frame captured. Checking the note…" };
+}
+
 /** Sends a camera frame to the ONNX inference API and maps its response to the UI contract. */
 export async function runInference(
   preferences: UserPreferences,
@@ -77,4 +111,54 @@ export async function runInference(
   }
 
   throw new Error("Camera frame is not ready. Please wait for the camera preview and try again.");
+}
+
+function captureFrame(video: HTMLVideoElement): ImageData | null {
+  const canvas = document.createElement("canvas");
+  canvas.width = 160;
+  canvas.height = 160;
+  const context = canvas.getContext("2d", { willReadFrequently: true });
+  if (!context) return null;
+  context.drawImage(video, 0, 0, canvas.width, canvas.height);
+  return context.getImageData(0, 0, canvas.width, canvas.height);
+}
+
+function averageBrightness(frame: ImageData): number {
+  let total = 0;
+  for (let index = 0; index < frame.data.length; index += 16) {
+    total += (frame.data[index] * 0.299) + (frame.data[index + 1] * 0.587) + (frame.data[index + 2] * 0.114);
+  }
+  return total / (frame.data.length / 16);
+}
+
+function frameDifference(first: ImageData, second: ImageData): number {
+  let difference = 0;
+  for (let index = 0; index < first.data.length; index += 16) {
+    const firstLuma = (first.data[index] * 0.299) + (first.data[index + 1] * 0.587) + (first.data[index + 2] * 0.114);
+    const secondLuma = (second.data[index] * 0.299) + (second.data[index + 1] * 0.587) + (second.data[index + 2] * 0.114);
+    difference += Math.abs(firstLuma - secondLuma);
+  }
+  return difference / (first.data.length / 16);
+}
+
+function sharpness(frame: ImageData): number {
+  const width = frame.width;
+  const lumaAt = (x: number, y: number) => {
+    const index = (y * width + x) * 4;
+    return (frame.data[index] * 0.299) + (frame.data[index + 1] * 0.587) + (frame.data[index + 2] * 0.114);
+  };
+  let total = 0;
+  let totalSquared = 0;
+  let count = 0;
+  for (let y = 1; y < frame.height - 1; y += 2) {
+    for (let x = 1; x < width - 1; x += 2) {
+      const edge = Math.abs(lumaAt(x + 1, y) - lumaAt(x - 1, y)) +
+        Math.abs(lumaAt(x, y + 1) - lumaAt(x, y - 1));
+      total += edge;
+      totalSquared += edge * edge;
+      count += 1;
+    }
+  }
+  const mean = total / count;
+  return (totalSquared / count) - (mean * mean);
 }

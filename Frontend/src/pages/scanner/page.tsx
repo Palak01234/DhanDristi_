@@ -22,7 +22,7 @@ import { WaveformBars } from "@/components/feature/WaveformBars";
 import { useApp } from "@/context/AppProvider";
 import { useVoice } from "@/context/VoiceProvider";
 import { getCurrency } from "@/constants/currencies";
-import { runInference } from "@/services/inference/inferenceService";
+import { checkFrameQuality, runInference } from "@/services/inference/inferenceService";
 import { buildResultSpeechForVoice } from "@/services/inference/resultSpeech";
 import { modeMessage, statusMessage, voiceMessage } from "@/services/voice/voiceMessages";
 import type { DetectionMode } from "@/types";
@@ -50,7 +50,6 @@ const COUNTERFEIT_CONFIDENCE_THRESHOLD = 0.75;
 export default function Scanner() {
   const navigate = useNavigate();
   const videoRef = useRef<HTMLVideoElement>(null);
-  const guideRef = useRef<HTMLDivElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const { preferences, setLastResult, addHistoryRecord, updatePreferences } = useApp();
   const { speak, settings, hasKannadaEngineVoice, isSpeaking } = useVoice();
@@ -185,15 +184,18 @@ export default function Scanner() {
       return;
     }
     if (automatic) autoCaptureBusyRef.current = true;
+    const quality = await checkFrameQuality(videoRef.current);
+    if (!quality.ready) {
+      setGuideText(quality.message);
+      if (automatic) autoCaptureBusyRef.current = false;
+      if (!automatic) speak(quality.message, "attention", settings.language);
+      return;
+    }
     setScanning(true);
-    setGuideText(automatic ? "Note found. Checking clarity…" : "Scanning… please hold steady.");
+    setGuideText(quality.message);
     if (!automatic) speak(voiceMessage("scanning", settings.language), "normal", settings.language);
     try {
-      const { result } = await runInference(
-        preferences,
-        videoRef.current ?? undefined,
-        guideRef.current ?? undefined,
-      );
+      const { result } = await runInference(preferences, videoRef.current ?? undefined);
       const confidence = result.currencies[0]?.confidence ?? 0;
       const cleanDetection = result.status === "success" && confidence >= preferences.confidenceThreshold;
       const requiresCounterfeitCheck = Boolean(result.currencies[0] && confidence < COUNTERFEIT_CONFIDENCE_THRESHOLD);
@@ -346,7 +348,7 @@ export default function Scanner() {
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 flex items-center justify-center"
           >
-            <div ref={guideRef} className="relative h-52 w-40 lg:h-64 lg:w-52">
+            <div className="relative h-52 w-40 lg:h-64 lg:w-52">
               {/* Frame border */}
               <div className="absolute inset-0 rounded-2xl border border-primary-400/40" />
 
