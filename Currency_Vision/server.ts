@@ -321,8 +321,20 @@ function loadSession() {
   return sessionPromise;
 }
 
+const modelWarmupPromise = (async () => {
+  const startedAt = Date.now();
+  const session = await loadSession();
+  const inputName = session.inputNames[0];
+  const warmupData = new Float32Array(3 * inputSize * inputSize);
+  await session.run({
+    [inputName]: new ort.Tensor("float32", warmupData, [1, 3, inputSize, inputSize]),
+  });
+  console.log("[model] ready", { warmupMs: Date.now() - startedAt, inputSize });
+})();
+
 app.post("/api/inference", express.raw({ type: ["image/jpeg", "image/png", "application/octet-stream"], limit: "12mb" }), async (req, res) => {
   try {
+    await modelWarmupPromise;
     if (!Buffer.isBuffer(req.body) || req.body.length === 0) {
       res.status(400).json({ error: "An image body is required" });
       return;
@@ -337,11 +349,13 @@ app.post("/api/inference", express.raw({ type: ["image/jpeg", "image/png", "appl
     );
     const mode = req.header("x-detection-mode") ?? "single";
     const threshold = Number(req.header("x-confidence-threshold")) || 0.65;
+    const inferenceStartedAt = Date.now();
     const { data, info } = await sharp(req.body)
       .resize({ width: inputSize, height: inputSize, fit: "contain", background: { r: 114, g: 114, b: 114 } })
       .removeAlpha()
       .raw()
       .toBuffer({ resolveWithObject: true });
+    const preprocessingMs = Date.now() - inferenceStartedAt;
 
     const planeSize = info.width * info.height;
     const tensorData = new Float32Array(planeSize * 3);
@@ -357,6 +371,7 @@ app.post("/api/inference", express.raw({ type: ["image/jpeg", "image/png", "appl
     const output = (await session.run({
       [inputName]: new ort.Tensor("float32", tensorData, [1, 3, info.height, info.width]),
     }))[outputName];
+    const modelInferenceMs = Date.now() - inferenceStartedAt - preprocessingMs;
 
     const [, boxCount, columns] = output.dims as [number, number, number];
     const values = output.data as Float32Array;
@@ -380,14 +395,16 @@ app.post("/api/inference", express.raw({ type: ["image/jpeg", "image/png", "appl
       if (confidence < confidenceFloor) reason = "below confidence floor";
       else if (!note) reason = "unknown class";
       else if (currencies.size > 0 && !currencies.has(note.currency)) reason = "currency filtered";
-      rawPredictions.push({
-        index,
-        confidence,
-        classIndex,
-        detectedClass: note ? `${note.currency} ${note.value}` : null,
-        accepted: !reason,
-        ...(reason ? { reason } : {}),
-      });
+      if (confidence >= confidenceFloor || reason === "currency filtered") {
+        rawPredictions.push({
+          index,
+          confidence,
+          classIndex,
+          detectedClass: note ? `${note.currency} ${note.value}` : null,
+          accepted: !reason,
+          ...(reason ? { reason } : {}),
+        });
+      }
       if (reason) continue;
       detections.push({ currency: note.currency as CurrencyCode, denomination: note.value, confidence });
     }
@@ -407,6 +424,9 @@ app.post("/api/inference", express.raw({ type: ["image/jpeg", "image/png", "appl
       mode,
       threshold,
       inputBytes: req.body.length,
+      preprocessingMs,
+      modelInferenceMs,
+      totalInferenceMs: Date.now() - inferenceStartedAt,
       inputDimensions: { width: info.width, height: info.height, channels: info.channels },
       model: {
         inputName,
