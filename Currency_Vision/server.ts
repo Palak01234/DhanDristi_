@@ -360,16 +360,35 @@ app.post("/api/inference", express.raw({ type: ["image/jpeg", "image/png", "appl
 
     const [, boxCount, columns] = output.dims as [number, number, number];
     const values = output.data as Float32Array;
+    const rawPredictions: Array<{
+      index: number;
+      confidence: number;
+      classIndex: number;
+      detectedClass: string | null;
+      accepted: boolean;
+      reason?: string;
+    }> = [];
     const detections: Array<{ currency: CurrencyCode; denomination: number; confidence: number }> = [];
     for (let index = 0; index < boxCount; index += 1) {
       const base = index * columns;
       const confidence = values[base + 4];
       const classIndex = Math.round(values[base + 5]);
       const note = CLASSES[classIndex];
+      let reason: string | undefined;
       // Keep usable low-confidence detections so the frontend can route them
       // to the counterfeit/security check instead of treating them as absent.
-      if (confidence < confidenceFloor || !note) continue;
-      if (currencies.size > 0 && !currencies.has(note.currency)) continue;
+      if (confidence < confidenceFloor) reason = "below confidence floor";
+      else if (!note) reason = "unknown class";
+      else if (currencies.size > 0 && !currencies.has(note.currency)) reason = "currency filtered";
+      rawPredictions.push({
+        index,
+        confidence,
+        classIndex,
+        detectedClass: note ? `${note.currency} ${note.value}` : null,
+        accepted: !reason,
+        ...(reason ? { reason } : {}),
+      });
+      if (reason) continue;
       detections.push({ currency: note.currency as CurrencyCode, denomination: note.value, confidence });
     }
 
@@ -388,6 +407,16 @@ app.post("/api/inference", express.raw({ type: ["image/jpeg", "image/png", "appl
       mode,
       threshold,
       inputBytes: req.body.length,
+      inputDimensions: { width: info.width, height: info.height, channels: info.channels },
+      model: {
+        inputName,
+        outputName,
+        outputDimensions: output.dims,
+        boxCount,
+        columns,
+      },
+      rawPredictions,
+      acceptedDetections: detections,
       output: result,
     });
     res.json(result);
