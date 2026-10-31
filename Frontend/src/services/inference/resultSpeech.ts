@@ -97,12 +97,12 @@ const MAPS: Record<string, PhraseMap> = {
   },
   te: {
     low_confidence: (t) =>
-      `గుర్తింపు అనిశ్చితం. బహుశా ${t.code} ${t.denom}, కానీ విశ్వాసం తక్కువ. దయచేసి మంచి వెలుతురులో మళ్ళీ ప్రయత్నించండి.`,
-    counterfeit: (t) => `హెచ్చరిక. ${t.code} ${t.denom} నోటు నకిలీ కావచ్చు. దయచేసి భద్రతా లక్షణాలను పరిశీలించండి.`,
+      `గుర్తింపు అనిశ్చితం. బహుశా ${teAmount(t.code, t.denom)}, కానీ విశ్వాసం తక్కువ. దయచేసి మంచి వెలుతురులో మళ్ళీ ప్రయత్నించండి.`,
+    counterfeit: (t) => `హెచ్చరిక. ${teAmount(t.code, t.denom)} నోటు నకిలీ కావచ్చు. దయచేసి భద్రతా లక్షణాలను పరిశీలించండి.`,
     wrong_currency: () => "శ్రద్ధ. ఇది వేరే కరెన్సీలా కనిపిస్తోంది. దయచేసి మళ్ళీ పరిశీలించండి.",
     error: () => "క్షమించండి. కరెన్సీ గుర్తింపులో లోపం ఏర్పడింది. మళ్ళీ ప్రయత్నించండి.",
     multiple: (t) => `${t.count} నోట్లు గుర్తించబడ్డాయి. మొత్తం ${t.code} ${t.total}.`,
-    single: (t) => `విజయవంతమైన గుర్తింపు. ${t.code} ${t.denom}.`,
+    single: (t) => `విజయవంతమైన గుర్తింపు. ${teAmount(t.code, t.denom)} గుర్తించబడింది.`,
     none: () => "ఎటువంటి కరెన్సీ గుర్తించబడలేదు.",
   },
   ta: {
@@ -256,5 +256,41 @@ function knNumber(value: number): string {
   if (value < 1000) return `${KN_DIGITS[Math.floor(value / 100)]} ನೂರು${value % 100 ? ` ${knNumber(value % 100)}` : ""}`;
   if (value < 100000) return `${knNumber(Math.floor(value / 1000))} ಸಾವಿರ${value % 1000 ? ` ${knNumber(value % 1000)}` : ""}`;
   if (value < 10000000) return `${knNumber(Math.floor(value / 100000))} ಲಕ್ಷ${value % 100000 ? ` ${knNumber(value % 100000)}` : ""}`;
+  return String(value);
+}
+
+const TE_CURRENCY_NAMES: Partial<Record<CurrencyCode, string>> = {
+  INR: "రూపాయలు",
+  USD: "డాలర్లు",
+  PHP: "పెసోలు",
+  EUR: "యూరోలు",
+  AUD: "ఆస్ట్రేలియన్ డాలర్లు",
+  CAD: "కెనడియన్ డాలర్లు",
+};
+
+const TE_DIGITS = ["సున్నా", "ఒకటి", "రెండు", "మూడు", "నాలుగు", "ఐదు", "ఆరు", "ఏడు", "ఎనిమిది", "తొమ్మిది"];
+const TE_SMALL_NUMBERS = [
+  "సున్నా", "ఒకటి", "రెండు", "మూడు", "నాలుగు", "ఐదు", "ఆరు", "ఏడు", "ఎనిమిది", "తొమ్మిది",
+  "పది", "పదకొండు", "పన్నెండు", "పదమూడు", "పద్నాలుగు", "పదిహేను", "పదహారు", "పదిహేడు",
+  "పద్దెనిమిది", "పంతొమ్మిది",
+];
+
+function teAmount(code: string, value: string): string {
+  const numeric = Number(value.replace(/,/g, ""));
+  if (!Number.isFinite(numeric)) return `${TE_CURRENCY_NAMES[code as CurrencyCode] ?? code} ${value}`;
+  const whole = Math.floor(numeric);
+  const fraction = Math.round((numeric - whole) * 100);
+  const numberText = teNumber(whole) + (fraction ? ` పాయింట్ ${String(fraction).split("").map((d) => TE_DIGITS[Number(d)]).join(" ")}` : "");
+  return `${numberText} ${TE_CURRENCY_NAMES[code as CurrencyCode] ?? code}`;
+}
+
+function teNumber(value: number): string {
+  if (value < 20) return TE_SMALL_NUMBERS[value] ?? String(value);
+  if (value < 100) {
+    const tens = ["", "", "ఇరవై", "ముప్పై", "నలభై", "యాభై", "అరవై", "డెబ్బై", "ఎనభై", "తొంభై"];
+    return tens[Math.floor(value / 10)] + (value % 10 ? ` ${TE_DIGITS[value % 10]}` : "");
+  }
+  if (value < 1000) return `${TE_DIGITS[Math.floor(value / 100)]} వందల${value % 100 ? ` ${teNumber(value % 100)}` : ""}`;
+  if (value < 100000) return `${teNumber(Math.floor(value / 1000))} వేల${value % 1000 ? ` ${teNumber(value % 1000)}` : ""}`;
   return String(value);
 }
