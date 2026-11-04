@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="535" height="760" viewBox="0 0 535 760">
+  <rect width="535" height="760" fill="white"/>
+
+  <g fill="white" stroke="#333333" stroke-width="1.2">
+    <rect x="218" y="25" width="94" height="55"/>
+    <rect x="218" y="125" width="94" height="55"/>
+    <rect x="218" y="225" width="94" height="55"/>
+    <rect x="218" y="325" width="94" height="55"/>
+    <rect x="218" y="425" width="94" height="55"/>
+    <rect x="218" y="525" width="94" height="55"/>
+    <rect x="218" y="625" width="94" height="55"/>
+  </g>
+
+  <g fill="#222222" font-family="Arial, Helvetica, sans-serif" font-size="13" text-anchor="middle">
+    <text x="265" y="48">USER</text>
+    <text x="265" y="64">Input</text>
+
+    <text x="265" y="148">Camera Capture</text>
+    <text x="265" y="164">&amp; Frame Quality</text>
+
+    <text x="265" y="248">Browser ONNX</text>
+    <text x="265" y="264">Validation</text>
+
+    <text x="265" y="348">Image Preprocessing</text>
+    <text x="265" y="364">&amp; YOLO Inference</text>
+
+    <text x="265" y="448">Currency and</text>
+    <text x="265" y="464">Denomination Result</text>
+
+    <text x="265" y="548">Conversion &amp;</text>
+    <text x="265" y="564">Voice Feedback</text>
+
+    <text x="265" y="648">Detection History</text>
+    <text x="265" y="664">&amp; User Storage</text>
+  </g>
+
+  <g fill="none" stroke="#222222" stroke-width="1.2">
+    <line x1="265" y1="80" x2="265" y2="125"/>
+    <line x1="265" y1="180" x2="265" y2="225"/>
+    <line x1="265" y1="280" x2="265" y2="325"/>
+    <line x1="265" y1="380" x2="265" y2="425"/>
+    <line x1="265" y1="480" x2="265" y2="525"/>
+    <line x1="265" y1="580" x2="265" y2="625"/>
+  </g>
+
+  <g fill="#222222">
+    <path d="M265 125 l-4 -8 h8 z"/>
+    <path d="M265 225 l-4 -8 h8 z"/>
+    <path d="M265 325 l-4 -8 h8 z"/>
+    <path d="M265 425 l-4 -8 h8 z"/>
+    <path d="M265 525 l-4 -8 h8 z"/>
+    <path d="M265 625 l-4 -8 h8 z"/>
+  </g>
+
+  <g fill="#222222" font-family="Arial, Helvetica, sans-serif" font-size="12">
+    <text x="326" y="101">Camera frame from the</text>
+    <text x="326" y="116">mobile device</text>
+
+    <text x="326" y="201">Brightness, sharpness, and</text>
+    <text x="326" y="216">stability checks</text>
+
+    <text x="326" y="301">Supported banknote is</text>
+    <text x="326" y="316">confirmed before upload</text>
+
+    <text x="326" y="401">640 × 640 RGB tensor is</text>
+    <text x="326" y="416">processed by ONNX Runtime</text>
+
+    <text x="326" y="501">Class index is mapped to</text>
+    <text x="326" y="516">currency, value, and confidence</text>
+
+    <text x="326" y="601">Converted amount is announced</text>
+    <text x="326" y="616">through localized voice output</text>
+
+    <text x="326" y="701">Detection record is saved for</text>
+    <text x="326" y="716">account history in MongoDB</text>
+  </g>
+
+  <text x="267.5" y="748" fill="#174a86" font-family="Georgia, Times New Roman, serif"
+        font-size="16" font-style="italic" text-anchor="middle">Fig. 1. Block Diagram</text>
+</svg>

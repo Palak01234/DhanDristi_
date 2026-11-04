@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="535" height="390" viewBox="0 0 535 390">
+  <rect width="535" height="390" fill="white"/>
+
+  <text x="267.5" y="24" fill="#222222" font-family="Arial, Helvetica, sans-serif"
+        font-size="16" text-anchor="middle">Dataset Distribution</text>
+
+  <g stroke="#bdbdbd" stroke-width="1">
+    <line x1="72" y1="53" x2="468" y2="53"/>
+    <line x1="72" y1="93" x2="468" y2="93"/>
+    <line x1="72" y1="133" x2="468" y2="133"/>
+    <line x1="72" y1="173" x2="468" y2="173"/>
+    <line x1="72" y1="213" x2="468" y2="213"/>
+    <line x1="72" y1="253" x2="468" y2="253"/>
+  </g>
+  <line x1="72" y1="293" x2="468" y2="293" stroke="#333333" stroke-width="1.2"/>
+  <line x1="72" y1="53" x2="72" y2="293" stroke="#333333" stroke-width="1.2"/>
+
+  <g fill="#222222" font-family="Arial, Helvetica, sans-serif" font-size="10" text-anchor="end">
+    <text x="65" y="296">0</text>
+    <text x="65" y="256">200</text>
+    <text x="65" y="216">400</text>
+    <text x="65" y="176">600</text>
+    <text x="65" y="136">800</text>
+    <text x="65" y="96">1000</text>
+    <text x="65" y="56">1200</text>
+  </g>
+
+  <g fill="#111111">
+    <rect x="94" y="123" width="42" height="170"/>
+    <rect x="158" y="143" width="42" height="150"/>
+    <rect x="222" y="109" width="42" height="184"/>
+    <rect x="286" y="160" width="42" height="133"/>
+    <rect x="350" y="132" width="42" height="161"/>
+    <rect x="414" y="153" width="42" height="140"/>
+  </g>
+
+  <g fill="#222222" font-family="Arial, Helvetica, sans-serif" font-size="10" text-anchor="middle">
+    <text x="115" y="311">USD</text>
+    <text x="179" y="311">PHP</text>
+    <text x="243" y="311">INR</text>
+    <text x="307" y="311">EUR</text>
+    <text x="371" y="311">AUD</text>
+    <text x="435" y="311">CAD</text>
+  </g>
+
+  <text x="267.5" y="339" fill="#222222" font-family="Arial, Helvetica, sans-serif"
+        font-size="12" text-anchor="middle">Supported currencies</text>
+  <text x="30" y="173" fill="#222222" font-family="Arial, Helvetica, sans-serif"
+        font-size="12" text-anchor="middle" transform="rotate(-90 30 173)">Number of images</text>
+
+  <text x="267.5" y="363" fill="#a33b2f" font-family="Arial, Helvetica, sans-serif"
+        font-size="10" text-anchor="middle">Illustrative distribution for draft layout only</text>
+  <text x="267.5" y="384" fill="#174a86" font-family="Georgia, Times New Roman, serif"
+        font-size="16" font-style="italic" text-anchor="middle">Fig. 12. Dataset Distribution Chart</text>
+</svg>

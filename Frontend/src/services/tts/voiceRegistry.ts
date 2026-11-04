@@ -75,7 +75,7 @@ export const VOICE_LANGUAGES: VoiceLanguage[] = [
 // A custom Voice Design voice is permitted through the ElevenLabs Free-plan
 // API. It is shared across personas until additional custom voices are added.
 //const DHANDRISHTI_MULTILINGUAL_VOICE = "eHS15p8fxK788Tx0X7EO";
-const DHANDRISHTI_MULTILINGUAL_VOICE = "5wrRb4AvDAj1E07zFlJk";
+const DHANDRISHTI_MULTILINGUAL_VOICE = "unxRfFSvc8rfD9CIhZYP";
 
 const ELEVEN = {
   Rachel: DHANDRISHTI_MULTILINGUAL_VOICE,

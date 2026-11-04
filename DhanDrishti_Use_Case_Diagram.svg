@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="535" height="250" viewBox="0 0 535 250">
+  <rect width="535" height="250" fill="white"/>
+
+  <g stroke="#222222" fill="none" stroke-width="1.2">
+    <circle cx="48" cy="48" r="7"/>
+    <line x1="48" y1="55" x2="48" y2="83"/>
+    <line x1="35" y1="64" x2="61" y2="64"/>
+    <line x1="48" y1="83" x2="38" y2="101"/>
+    <line x1="48" y1="83" x2="58" y2="101"/>
+
+    <circle cx="451" cy="48" r="7"/>
+    <line x1="451" y1="55" x2="451" y2="83"/>
+    <line x1="438" y1="64" x2="464" y2="64"/>
+    <line x1="451" y1="83" x2="441" y2="101"/>
+    <line x1="451" y1="83" x2="461" y2="101"/>
+  </g>
+
+  <g fill="#222222" font-family="Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle">
+    <text x="48" y="122">USER</text>
+    <text x="451" y="122">USER</text>
+  </g>
+
+  <rect x="177" y="41" width="180" height="58" rx="5" ry="5"
+        fill="white" stroke="#333333" stroke-width="1.2"/>
+  <g fill="#222222" font-family="Arial, Helvetica, sans-serif" font-size="14" text-anchor="middle">
+    <text x="267" y="66">DhanDrishti</text>
+    <text x="267" y="84">Currency Assistance System</text>
+  </g>
+
+  <g fill="none" stroke="#222222" stroke-width="1.2">
+    <line x1="62" y1="73" x2="177" y2="73"/>
+    <line x1="357" y1="73" x2="437" y2="73"/>
+  </g>
+  <g fill="#222222">
+    <path d="M177 73 l-9 -4 v8 z"/>
+    <path d="M437 73 l-9 -4 v8 z"/>
+  </g>
+
+  <g fill="#222222" font-family="Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle">
+    <text x="119" y="51">Scan Banknote</text>
+    <text x="119" y="65">(Camera Image)</text>
+    <text x="397" y="51">Receive Result</text>
+    <text x="397" y="65">(Voice / Display)</text>
+  </g>
+
+  <text x="267.5" y="184" fill="#174a86" font-family="Georgia, Times New Roman, serif"
+        font-size="17" font-style="italic" text-anchor="middle">Fig. 2. Use Case Diagram</text>
+</svg>

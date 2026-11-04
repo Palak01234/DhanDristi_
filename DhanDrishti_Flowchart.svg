@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="470" height="700" viewBox="0 0 470 700">
+  <rect width="470" height="700" fill="white"/>
+
+  <g fill="white" stroke="#333333" stroke-width="1.2">
+    <ellipse cx="235" cy="42" rx="45" ry="17"/>
+    <rect x="141" y="77" width="188" height="28" rx="5"/>
+    <rect x="119" y="123" width="232" height="47" rx="5"/>
+    <rect x="147" y="188" width="176" height="28" rx="5"/>
+    <rect x="121" y="234" width="228" height="47" rx="5"/>
+    <polygon points="235,300 292,334 235,368 178,334"/>
+    <rect x="47" y="388" width="135" height="28" rx="5"/>
+    <rect x="288" y="388" width="135" height="28" rx="5"/>
+    <rect x="124" y="435" width="222" height="47" rx="5"/>
+    <rect x="124" y="501" width="222" height="47" rx="5"/>
+    <rect x="124" y="567" width="222" height="47" rx="5"/>
+    <ellipse cx="235" cy="645" rx="45" ry="17"/>
+  </g>
+
+  <g fill="#222222" font-family="Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle">
+    <text x="235" y="46">Start</text>
+
+    <text x="235" y="95">User Opens Scanner</text>
+
+    <text x="235" y="143">Capture Banknote</text>
+    <text x="235" y="158">(Camera Frame)</text>
+
+    <text x="235" y="206">Check Frame Quality</text>
+
+    <text x="235" y="254">Browser ONNX Validation</text>
+    <text x="235" y="269">(Supported Note Check)</text>
+
+    <text x="235" y="331">Is Frame Valid?</text>
+
+    <text x="114" y="406">Retry Scan</text>
+    <text x="356" y="406">Send for Inference</text>
+
+    <text x="235" y="455">ONNX / YOLO Inference</text>
+    <text x="235" y="470">(Currency + Denomination)</text>
+
+    <text x="235" y="521">Evaluate Confidence</text>
+    <text x="235" y="536">(Success / Warning)</text>
+
+    <text x="235" y="587">Display and Speak Result</text>
+    <text x="235" y="602">(Conversion if Enabled)</text>
+
+    <text x="235" y="651">End</text>
+  </g>
+
+  <g fill="none" stroke="#222222" stroke-width="1.2">
+    <line x1="235" y1="59" x2="235" y2="77"/>
+    <line x1="235" y1="105" x2="235" y2="123"/>
+    <line x1="235" y1="170" x2="235" y2="188"/>
+    <line x1="235" y1="216" x2="235" y2="234"/>
+    <line x1="235" y1="281" x2="235" y2="300"/>
+
+    <line x1="178" y1="334" x2="114" y2="334"/>
+    <line x1="114" y1="334" x2="114" y2="388"/>
+    <line x1="292" y1="334" x2="356" y2="334"/>
+    <line x1="356" y1="334" x2="356" y2="388"/>
+
+    <line x1="356" y1="416" x2="356" y2="425"/>
+    <line x1="356" y1="425" x2="235" y2="425"/>
+    <line x1="235" y1="425" x2="235" y2="435"/>
+
+    <line x1="235" y1="482" x2="235" y2="501"/>
+    <line x1="235" y1="548" x2="235" y2="567"/>
+    <line x1="235" y1="614" x2="235" y2="628"/>
+
+    <path d="M114 416 L114 437 L124 437"/>
+    <path d="M124 437 L116 433 M124 437 L116 441"/>
+  </g>
+
+  <g fill="#222222">
+    <path d="M235 77 l-4 -8 h8 z"/>
+    <path d="M235 123 l-4 -8 h8 z"/>
+    <path d="M235 188 l-4 -8 h8 z"/>
+    <path d="M235 234 l-4 -8 h8 z"/>
+    <path d="M235 300 l-4 -8 h8 z"/>
+    <path d="M114 388 l-4 -8 h8 z"/>
+    <path d="M356 388 l-4 -8 h8 z"/>
+    <path d="M235 435 l-4 -8 h8 z"/>
+    <path d="M235 501 l-4 -8 h8 z"/>
+    <path d="M235 567 l-4 -8 h8 z"/>
+    <path d="M235 628 l-4 -8 h8 z"/>
+  </g>
+
+  <g fill="#222222" font-family="Arial, Helvetica, sans-serif" font-size="11">
+    <text x="126" y="327">No</text>
+    <text x="300" y="327">Yes</text>
+  </g>
+
+  <text x="235" y="687" fill="#174a86" font-family="Georgia, Times New Roman, serif"
+        font-size="17" font-style="italic" text-anchor="middle">Fig. 4. Flowchart</text>
+</svg>
