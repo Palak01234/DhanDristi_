@@ -18,7 +18,8 @@ npm install
 
 For account and history features, make sure MongoDB is running locally on its default port, or set `MONGODB_URI` in `Currency_Vision/.env`.
 
-For voice features, set this server-side variable in `Currency_Vision/.env`:
+For voice synthesis and transcription, set this server-side variable in
+`Currency_Vision/.env`:
 
 ```dotenv
 ELEVENLABS_API_KEY=your-key

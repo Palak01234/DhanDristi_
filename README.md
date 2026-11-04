@@ -63,8 +63,8 @@ The model recognizes **6 currencies** and **36 classes**:
 
 The two PHP 1000 entries are separate model classes because they represent the
 old and new note designs. The class order in
-[`Currency_Vision/dataset.yaml`](C:/Users/Lenovo/Desktop/Good%20Currency/currency/Currency_Vision/dataset.yaml)
-and [`Currency_Vision/src/banknotes.ts`](C:/Users/Lenovo/Desktop/Good%20Currency/currency/Currency_Vision/src/banknotes.ts)
+[`Currency_Vision/dataset.yaml`](./Currency_Vision/dataset.yaml)
+and [`Currency_Vision/src/banknotes.ts`](./Currency_Vision/src/banknotes.ts)
 must remain synchronized with the trained model.
 
 ## Technology stack and why it is used
@@ -123,9 +123,9 @@ does not require the Express API or MongoDB.
 
 ## Model: how it works
 
-The runtime model is [`Currency_Vision/public/model.onnx`](C:/Users/Lenovo/Desktop/Good%20Currency/currency/Currency_Vision/public/model.onnx).
+The runtime model is [`Currency_Vision/public/model.onnx`](./Currency_Vision/public/model.onnx).
 The repository's custom configuration is
-[`Currency_Vision/Yolov8s-SE.yaml`](C:/Users/Lenovo/Desktop/Good%20Currency/currency/Currency_Vision/Yolov8s-SE.yaml):
+[`Currency_Vision/Yolov8s-SE.yaml`](./Currency_Vision/Yolov8s-SE.yaml):
 
 - YOLOv8s-style detector with 36 output classes.
 - Squeeze-and-Excitation attention block after the SPPF stage.
@@ -172,15 +172,15 @@ evaluated on the 36 banknote classes:
 
 | Model result | Images | Instances | Precision | Recall | F1 score* | mAP@50 | mAP@50:95 |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| [YOLOv8s](C:/Users/Lenovo/Desktop/Good%20Currency/currency/Currency_Vision/yolov8s-result.png) | 742 | 858 | 0.931 (93.1%) | 0.878 (87.8%) | 0.904 (90.4%) | 0.917 (91.7%) | 0.780 (78.0%) |
-| [YOLOv8m](C:/Users/Lenovo/Desktop/Good%20Currency/currency/Currency_Vision/yolov8m-results.png) | 742 | 858 | 0.954 (95.4%) | 0.900 (90.0%) | 0.926 (92.6%) | 0.935 (93.5%) | 0.812 (81.2%) |
-| [RT-DETR](C:/Users/Lenovo/Desktop/Good%20Currency/currency/Currency_Vision/RT-DETR-Result.png) | 742 | 858 | 0.917 (91.7%) | 0.937 (93.7%) | 0.927 (92.7%) | 0.937 (93.7%) | 0.811 (81.1%) |
-| [YOLOv8s-SE (proposed)](C:/Users/Lenovo/Desktop/Good%20Currency/currency/Currency_Vision/yolov8s-SE-Result.png) | 759 | 863 | 0.621 (62.1%) | 0.670 (67.0%) | 0.645 (64.5%) | 0.705 (70.5%) | 0.553 (55.3%) |
+| YOLOv8s | 742 | 858 | 0.931 (93.1%) | 0.878 (87.8%) | 0.904 (90.4%) | 0.917 (91.7%) | 0.780 (78.0%) |
+| YOLOv8m | 742 | 858 | 0.954 (95.4%) | 0.900 (90.0%) | 0.926 (92.6%) | 0.935 (93.5%) | 0.812 (81.2%) |
+| RT-DETR | 742 | 858 | 0.917 (91.7%) | 0.937 (93.7%) | 0.927 (92.7%) | 0.937 (93.7%) | 0.811 (81.1%) |
+| YOLOv8s-SE (proposed) | 759 | 863 | 0.621 (62.1%) | 0.670 (67.0%) | 0.645 (64.5%) | 0.705 (70.5%) | 0.553 (55.3%) |
 
 `*` F1 is calculated from each reported aggregate precision and recall using
 `2PR / (P + R)`. The results are object-detection metrics, not classification
 accuracy. The screenshots do not identify which training run produced the
-committed [`public/model.onnx`](C:/Users/Lenovo/Desktop/Good%20Currency/currency/Currency_Vision/public/model.onnx)
+committed [`public/model.onnx`](./Currency_Vision/public/model.onnx)
 artifact, so they should not be presented as a verified benchmark of the
 deployed file without matching run metadata.
 
@@ -255,7 +255,7 @@ from training:
 ## Datasets used for training
 
 The expected YOLO dataset is described by
-[`Currency_Vision/dataset.yaml`](C:/Users/Lenovo/Desktop/Good%20Currency/currency/Currency_Vision/dataset.yaml):
+[`Currency_Vision/dataset.yaml`](./Currency_Vision/dataset.yaml):
 
 ```yaml
 path: ./data
@@ -307,7 +307,7 @@ rights before training or publishing a model.
   Vite plugin provides HTTPS during local development.
 - Optional: an ElevenLabs API key for voice synthesis/transcription.
 - Optional: Python and the packages in
-  [`Currency_Vision/requirements.txt`](C:/Users/Lenovo/Desktop/Good%20Currency/currency/Currency_Vision/requirements.txt)
+  [`Currency_Vision/requirements.txt`](./Currency_Vision/requirements.txt)
   for model training.
 
 ## Installation
@@ -444,8 +444,9 @@ For `/api/inference`, the image is sent as `image/jpeg`, `image/png`, or
 
 Start `npm run api` from `Currency_Vision`, check
 `http://localhost:8787/health`, and confirm the frontend proxy targets port
-8787. For a separately hosted API, set `VITE_MODEL_API_URL` in the frontend
-environment and restart Vite.
+8787. For a separately hosted API, set `VITE_API_URL` in the frontend
+environment and restart Vite. When it is unset, the frontend uses its Vite
+`/api` proxy, which forwards requests to `http://localhost:8787`.
 
 ### MongoDB errors
 

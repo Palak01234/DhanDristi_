@@ -1,14 +1,18 @@
-# Vision Demo
+# Currency Vision
 
-This project is a lightweight browser-based object detection demo. It loads a trained ONNX model in the browser, runs inference locally on uploaded images, draws detection boxes, and summarizes the results in a simple interface.
+This package contains DhanDrishti's currency-recognition runtime. It supports
+both a standalone browser demo and the Node/Express inference API used by the
+React application in `../Frontend`.
 
 ## Project structure
 
-- `index.html` and `src/` - Vite frontend
+- `index.html` and `src/` - standalone Vite demo
 - `public/model.onnx` - model used for inference
 - `public/ort/` - ONNX Runtime WebAssembly files
 - `public/samples/` - sample images for testing
-- `dataset.yaml` - example dataset configuration
+- `server.ts` - Express API, authentication, history, TTS proxy, and Node inference
+- `dataset.yaml` - 36-class YOLO dataset configuration
+- `src/banknotes.ts` - model class map and currency conversion helper
 
 ## Run locally
 
@@ -30,14 +34,19 @@ For the React frontend scanner, run the model API in a second terminal:
 npm run api
 ```
 
-The API listens on `http://localhost:8787`. Set `VITE_MODEL_API_URL` in the
-frontend environment when the API is deployed elsewhere. The React scanner
-captures a camera frame and sends it to `/api/inference`; the API loads
-`public/model.onnx` with ONNX Runtime Node and returns detected currencies,
-denominations, and confidence scores.
+The API listens on `http://localhost:8787`. The React scanner first validates
+the camera frame with ONNX Runtime WebAssembly, then sends the JPEG to
+`/api/inference`. The API preprocesses the image with Sharp, runs
+`public/model.onnx` with ONNX Runtime Node, and returns detected currencies,
+denominations, confidence scores, and timing information.
+
+The frontend uses the local Vite `/api` proxy by default. For a separately
+hosted API, set `VITE_API_URL` in `Frontend/.env`.
 
 ## Notes
 
-- The app performs inference locally in the browser.
-- No backend or external service is required for the detection flow.
-- This is a demo project intended for learning and experimentation.
+- The standalone demo performs inference locally in the browser.
+- The full application requires the API for server inference and MongoDB for
+  account and history features.
+- Voice synthesis and transcription require a server-side
+  `ELEVENLABS_API_KEY`; never expose that key in frontend code.
